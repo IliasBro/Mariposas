@@ -23,8 +23,8 @@ jobs:
 
       - name: Build and push App Image
         run: |
-          docker build -t iliasbro/mariposas-app:latest .
-          docker push iliasbro/mariposas-app:latest
+          docker build -t iliasbro/mariposas:latest .
+          docker push iliasbro/mariposas:latest
 
       - name: Push DJL Serving Image (if needed)
         run: |
