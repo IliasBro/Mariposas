@@ -4,15 +4,13 @@ services:
     image: iliasbro/mariposas:latest
     ports:
       - "8081:8080"
-    volumes:
-      - ./models:/opt/djl/model
     environment:
-      - MODEL_URL=file:/opt/djl/model/model.zip
+      - MODEL_URL=file:/opt/djl/model.zip
 
   mariposas-app:
-    image: iliasbro/mariposas-app:latest
+    image: iliasbro/mariposas:latest
     ports:
-      - "8082:8082"
+      - "8080:8080"
     environment:
       - DJL_INFERENCE_HOST=http://djl-serving:8080
     depends_on:
