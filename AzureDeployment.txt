@@ -1,0 +1,12 @@
+az group create --name mariposas --location switzerlandnorth
+
+az appservice plan create --name mariposas --resource-group mariposas --sku F1 --is-linux
+
+az webapp create --resource-group mariposas --plan mariposas --name mariposashdp3 --container-image iliasbro/mariposas:latest
+
+
+az webapp config container set \
+  --resource-group mariposas \
+  --name mariposashdp3 \
+  --multicontainer-config-type compose \
+  --multicontainer-config-file docker-compose.yml
