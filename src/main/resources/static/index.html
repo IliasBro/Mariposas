@@ -25,54 +25,81 @@
             <img id="preview" src="#" alt="Vorschau" style="display: none;" />
         </div>
 
-        <div id="resultCard" class="card">
+        <div id="resultCard" class="card" style="display: none;">
             <div class="card-body">
                 <h5 class="card-title">🔍 Analyseergebnis</h5>
-                <pre id="answer" class="mb-0"></pre>
+                <div id="resultsWithImages" class="d-flex flex-wrap gap-4"></div>
             </div>
         </div>
+        
+        
+        
     </div>
 
-    <script>
-        function checkFiles(files) {
-            const preview = document.getElementById("preview");
-            const answer = document.getElementById("answer");
-            const resultCard = document.getElementById("resultCard");
-        
-            if (!files || files.length === 0) return;
-        
-            const file = files[0];
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
-        
-            const formData = new FormData();
-            formData.append("image", file);
-        
-            fetch('/analyze', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                let resultHTML = "<ul class='list-group'>";
-                data.forEach(item => {
-                    const percent = (item.probability * 100).toFixed(2);
-                    resultHTML += `<li class='list-group-item d-flex justify-content-between align-items-center'>
-                        <span>${item.className}</span>
-                        <span class="badge bg-primary rounded-pill">${percent} %</span>
-                    </li>`;
-                });
-                resultHTML += "</ul>";
-        
-                answer.innerHTML = resultHTML;
-                resultCard.style.display = "block";
-            })
-            .catch(error => {
-                answer.textContent = "Fehler: " + error;
-                resultCard.style.display = "block";
-            });
+<script>
+
+    function checkFiles(files) {
+        const preview = document.getElementById("preview");
+        const resultCard = document.getElementById("resultCard");
+        const resultsWithImages = document.getElementById("resultsWithImages");
+    
+        if (!files || files.length !== 1) {
+            alert("Bitte genau eine Datei hochladen.");
+            return;
         }
-        </script>
-        
+    
+        const file = files[0];
+        const fileSize = file.size / 1024 / 1024; // in MiB
+        if (fileSize > 10) {
+            alert("Datei zu gross (max. 10Mb)");
+            return;
+        }
+    
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    
+        const formData = new FormData();
+        formData.append("image", file);
+    
+        fetch('/analyze', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            resultsWithImages.innerHTML = ""; // vorherige Ergebnisse löschen
+    
+            data.forEach(item => {
+                const percent = (item.probability * 100).toFixed(2);
+    
+                const resultBlock = document.createElement("div");
+                resultBlock.className = "text-center";
+                resultBlock.style.maxWidth = "180px";
+    
+                const label = document.createElement("p");
+                label.innerHTML = `<strong>${item.className}</strong><br><span class="badge bg-primary">${percent} %</span>`;
+    
+                const img = document.createElement("img");
+                img.src = `/images/${item.className}.jpg`;
+                img.alt = `Bild von ${item.className}`;
+                img.style.width = "100%";
+                img.style.borderRadius = "0.5rem";
+                img.style.boxShadow = "0 0 6px rgba(0,0,0,0.2)";
+    
+                resultBlock.appendChild(label);
+                resultBlock.appendChild(img);
+                resultsWithImages.appendChild(resultBlock);
+            });
+    
+            resultCard.style.display = "block";
+        })
+        .catch(error => {
+            resultsWithImages.innerHTML = `<p class="text-danger">Fehler: ${error}</p>`;
+            resultCard.style.display = "block";
+        });
+    }
+    
+</script>
+            
 </body>
 </html>

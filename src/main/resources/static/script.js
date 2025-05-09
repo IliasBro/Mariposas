@@ -1,48 +1,65 @@
 function checkFiles(files) {
-    console.log(files);
+    const preview = document.getElementById("preview");
+    const answer = document.getElementById("answer");
+    const resultCard = document.getElementById("resultCard");
+    const exampleImages = document.getElementById("exampleImages");
+    const exampleImageWrapper = document.getElementById("exampleImageWrapper");
 
-    if (files.length != 1) {
-        alert("Bitte genau eine Datei hochladen.")
+    if (!files || files.length !== 1) {
+        alert("Bitte genau eine Datei hochladen.");
         return;
     }
 
-    const fileSize = files[0].size / 1024 / 1024; // in MiB
+    const file = files[0];
+    const fileSize = file.size / 1024 / 1024;
     if (fileSize > 10) {
         alert("Datei zu gross (max. 10Mb)");
         return;
     }
 
-    answerPart.style.visibility = "visible";
-    const file = files[0];
+    // Preview anzeigen
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
 
-    // Preview
-    if (file) {
-        preview.src = URL.createObjectURL(files[0])
-    }
-
-    // Upload
+    // Upload vorbereiten
     const formData = new FormData();
-    for (const name in files) {
-        formData.append("image", files[name]);
-    }
+    formData.append("image", file);
 
+    // Request an Server
     fetch('/analyze', {
         method: 'POST',
-        headers: {
-        },
         body: formData
-    }).then(
-        response => {
-            console.log(response)
-            response.text().then(function (text) {
-                answer.innerHTML = text;
-            });
+    })
+    .then(response => response.json())
+    .then(data => {
+        let resultHTML = "<ul class='list-group'>";
+        exampleImages.innerHTML = ""; // Reset vorherige Bilder
 
-        }
-    ).then(
-        success => console.log(success)
-    ).catch(
-        error => console.log(error)
-    );
+        data.forEach(item => {
+            const percent = (item.probability * 100).toFixed(2);
+            resultHTML += `<li class='list-group-item d-flex justify-content-between align-items-center'>
+                <span>${item.className}</span>
+                <span class="badge bg-primary rounded-pill">${percent} %</span>
+            </li>`;
 
+            const imageDiv = document.createElement("div");
+            imageDiv.className = "text-center";
+            imageDiv.style.width = "180px";
+            imageDiv.innerHTML = `
+                <img src="/images/${item.className}.jpg" alt="${item.className}" class="img-thumbnail" style="max-width: 100%; border-radius: 0.5rem;">
+                <small class="d-block mt-1">${item.className}</small>
+            `;
+            exampleImages.appendChild(imageDiv);
+        });
+
+        resultHTML += "</ul>";
+        answer.innerHTML = resultHTML;
+        resultCard.style.display = "block";
+        exampleImageWrapper.style.display = "block";
+    })
+    .catch(error => {
+        answer.textContent = "Fehler: " + error;
+        resultCard.style.display = "block";
+        exampleImageWrapper.style.display = "none";
+    });
 }

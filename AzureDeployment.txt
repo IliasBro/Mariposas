@@ -1,23 +1,40 @@
-az group create --name mariposas --location switzerlandnorth
+mosa:
 
-az appservice plan create --name mariposas --resource-group mariposas --sku F1 --is-linux
+az group create --name djl-sentiment-analysis --location switzerlandnorth
 
-az webapp create --resource-group mariposas --plan mariposas --name mariposashdp3 --container-image iliasbro/mariposas:latest
+az appservice plan create --name djl-sentiment-analysis --resource-group djl-sentiment-analysis --sku F1 --is-linux
 
+az webapp create --resource-group djl-sentiment-analysis --plan djl-sentiment-analysis --name djl-sentiment-analysis --container-image mosazhaw/djl-sentiment-analysis:latest
+
+ehrenili:
+
+az group create --name mariposa5400 --location switzerlandnorth
+
+az appservice plan create --name mariposa5400 --resource-group mariposa5400 --sku F1 --is-linux
+
+az webapp create --resource-group mariposa5400 --plan mariposa5400 --name mariposa5400 --container-image iliasbro/mariposas:v2
+
+
+um app zu updaten:
 
 az webapp config container set \
-  --resource-group mariposas \
-  --name mariposashdp3 \
-  --multicontainer-config-type compose \
-  --multicontainer-config-file docker-compose.yml
+  --resource-group mariposa5400 \
+  --name mariposa5400 \
+  --docker-custom-image-name iliasbro/mariposas:latest
+
+
+docker image:
+
+./mvnw package
+docker buildx build --platform linux/amd64 -t iliasbro/mariposas:latest .
+docker push iliasbro/mariposas:latest
+
+docker test locally:
+
+docker run -p 8080:8080 mariposas:v2
 
 
 
------------------------
 
-az webapp create \
-  --resource-group mariposas \
-  --plan mariposas \
-  --name mariposashdp3 \
-  --multicontainer-config-type compose \
-  --multicontainer-config-file docker-compose.yml
+
+
