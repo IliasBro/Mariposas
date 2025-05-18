@@ -12,19 +12,7 @@ Mariposas ist ein Java-basiertes Web-Projekt, das mithilfe der Deep Java Library
 
 ## Projektstruktur
 
-.
-├── RawData/                # Ursprüngliches Bildmaterial (nicht verarbeitet)
-├── dataset/                # Vorverarbeitete Bilder, gruppiert nach Klassennamen
-├── models/                 # Enthält das trainierte Modell und synset.txt
-├── src/
-│   └── main/
-│       ├── java/           # Spring Boot App & REST Controller
-│       └── resources/
-│           └── static/     # Web-Oberfläche (HTML, JS, Beispielbilder)
-├── Dockerfile              # Containerisierung der Anwendung
-├── .gitignore
-├── pom.xml                 # Maven-Projektdefinition
-└── README.md
+![Projektstruktur](Projektstruktur.png)
 
 ## Technologien
 
