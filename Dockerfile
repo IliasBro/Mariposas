@@ -2,7 +2,7 @@
 # docker build -t iliasbro/mariposas .
 # docker run --name mariposas -p 8080:8080 -d iliasbro/mariposas
 
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk
 
 # Copy Files
 WORKDIR /usr/src/app
